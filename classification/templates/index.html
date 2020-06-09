@@ -1,0 +1,47 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Text Classification Labeling</title>
+  <link rel="stylesheet" href="static/css/style.css">
+  <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+</head>
+
+<body>
+  <div class="labels">
+    {%for i in range(0, meta_len)%}
+    <div class="label" label-key={{meta[i]['key']}} id={{meta[i]['value']}}>
+      Label: "{{meta[i]['value']}}", Key: "{{meta[i]['key']}}"
+    </div>
+    {%endfor%}
+  </div>
+
+  <div class="textBox" id="textValue">{{ data_text }}</div>
+</body>
+
+<script type='text/javascript'>
+  function pressKey(event) {
+    const key = document.querySelector(`div[label-key="${event.key}"]`)
+
+    if (key) {
+      var label = {
+        category: key.id,
+        text: document.getElementById("textValue").outerText,
+      }
+      
+      // Post json label to console for debugging
+      console.log(JSON.stringify(label))
+
+      // request POST to flask app
+      $.post("/", {"submitted_label": label})
+
+      // Ensure manual page reload to force flask to re-render template
+      location.reload()
+    }
+  }
+  window.addEventListener('keypress', pressKey)
+</script>
+
+</html>

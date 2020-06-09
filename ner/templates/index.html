@@ -1,0 +1,89 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <script type='text/javascript'>
+    var label = {
+      text: '',
+      index: 0,
+      entity: 'PER',
+      start: 0,
+      stop: 0
+    }
+  </script>
+  <h1>Data Labeling Test</h1>
+</head>
+
+<body style="padding: 12.5%">
+  <div class="container" id="entityData">
+    <h3>Available Entities!</h3>
+    <p>Use the `shift` + number as shown in the buttons below. Note, the buttons will have no effect!</p>
+    <div class="btn-group" style="text-align: center;">
+      <button type="hidden" name="person_entity">PER: shift + 1</button>
+      <button type="hidden" name="org_entity">ORG: shift + 2</button>
+      <button type="hidden" name="product_entity"">PROD: shift + 3</button>
+      <button type="hidden" name="location_entity">LOC: shift + 4</button>
+    </div>
+  </div>
+
+  <data name="indexValue" id="indexValue" value={{ current_index }}>
+    <h3>Index Key: {{ current_index }}</h3>
+  </data>
+
+  <div class="container" id="textData" style="background-color:#e1e5e8; border-radius:10px; padding: 1%; line-height:30px">
+    <blockquote>
+      {{ text }}
+    </blockquote>
+  </div>
+  <form method="POST" action="/">
+    <div class="container" style="text-align: center;">
+      <input type="hidden" name="current_index" value="{{ current_index }}">
+      <button type="submit" name="first_item" class="btn btn-success" value="{{ True }}">First</button>
+      <button type="submit" name="prev_five_item" class="btn btn-success" value="{{ True }}"><< Prev 5</button>
+      <button type="submit" name="prev_item" class="btn btn-success" value="{{ True }}">< Prev</button>
+      <button type="submit" name="next_item" class="btn btn-success" value="{{ True }}">Next ></button>
+      <button type="submit" name="next_five_item" class="btn btn-success" value="{{ True }}">Next 5 >></button>
+    </div>
+  </form>
+
+  <form name="selectionform" style="text-align: center">
+    <textarea name="selectiontext" rows="20" cols="180"></textarea>
+  </form>
+
+</body>
+
+<script type='text/javascript'>
+  document.onkeyup = function(event) {
+    if (event.which == 49 && event.shiftKey) {
+      label.entity = "PER"
+    } else if (event.which == 50 && event.shiftKey) {
+      label.entity = "ORG"
+    } else if (event.which == 51 && event.shiftKey) {
+      label.entity = "PROD"
+    } else if (event.which == 52 && event.shiftKey) {
+      label.entity = "LOC"
+    }
+    console.log(`UPDATED ENTITY TO ${label.entity}`)
+  }
+</script>
+
+<script type='text/javascript'>
+  textData.onmouseup = function (event) {
+    let selection = window.getSelection()
+    label.text = selection.toString()
+    label.start = selection.anchorOffset
+    label.stop = selection.focusOffset
+    label.index = parseInt(document.getElementById("indexValue").value, 10)
+
+    if (label.stop - label.start > 0) {
+      console.log(label)
+      let selectionText = JSON.stringify(label)
+      document.selectionform.selectiontext.append(`${selectionText},\n`)
+      copy(selectionText)
+    }
+  }
+</script>
+
+</html>
